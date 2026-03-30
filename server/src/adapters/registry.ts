@@ -78,6 +78,17 @@ import {
   agentConfigurationDoc as hermesAgentConfigurationDoc,
   models as hermesModels,
 } from "hermes-paperclip-adapter";
+import {
+  execute as nanobotExecute,
+  testEnvironment as nanobotTestEnvironment,
+  listNanobotSkills,
+  syncNanobotSkills,
+  sessionCodec as nanobotSessionCodec,
+} from "@paperclipai/adapter-nanobrain-local/server";
+import {
+  agentConfigurationDoc as nanobotAgentConfigurationDoc,
+  models as nanobotModels,
+} from "@paperclipai/adapter-nanobrain-local";
 import { processAdapter } from "./process/index.js";
 import { httpAdapter } from "./http/index.js";
 
@@ -187,6 +198,19 @@ const hermesLocalAdapter: ServerAdapterModule = {
   detectModel: () => detectModelFromHermes(),
 };
 
+const nanobotLocalAdapter: ServerAdapterModule = {
+  type: "nanobrain_local",
+  execute: nanobotExecute,
+  testEnvironment: nanobotTestEnvironment,
+  listSkills: listNanobotSkills,
+  syncSkills: syncNanobotSkills,
+  sessionCodec: nanobotSessionCodec,
+  sessionManagement: getAdapterSessionManagement("nanobrain_local") ?? undefined,
+  models: nanobotModels,
+  supportsLocalAgentJwt: false,
+  agentConfigurationDoc: nanobotAgentConfigurationDoc,
+};
+
 const adaptersByType = new Map<string, ServerAdapterModule>(
   [
     claudeLocalAdapter,
@@ -197,6 +221,7 @@ const adaptersByType = new Map<string, ServerAdapterModule>(
     geminiLocalAdapter,
     openclawGatewayAdapter,
     hermesLocalAdapter,
+    nanobotLocalAdapter,
     processAdapter,
     httpAdapter,
   ].map((a) => [a.type, a]),
